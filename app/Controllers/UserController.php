@@ -1,9 +1,9 @@
 <?php
-namespace App\controllers;
-use App\Core\controller;
+namespace App\Controllers;
+use App\Core\Controller;
 use App\Models\User;
 
-class UserController extends controller {
+class UserController extends Controller {
     private $userModel;
     
     public function __construct() {

@@ -1,8 +1,8 @@
 <?php
-namespace App\controllers;
-use App\Core\controller;
+namespace App\Controllers;
+use App\Core\Controller;
 
-class HomeController extends controller {
+class HomeController extends Controller {
     public function index() {
         $data = [
             'title' => 'Home Page',

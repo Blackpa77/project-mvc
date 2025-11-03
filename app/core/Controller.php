@@ -1,7 +1,7 @@
 <?php
 namespace App\Core;
 
-class Controller {
+class controller {
     protected function view($view, $data = []) {
         extract($data);
         $viewPath = __DIR__ . '/../views/' . str_replace('.', '/', $view) . '.php';

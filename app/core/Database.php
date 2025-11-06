@@ -2,33 +2,46 @@
 class Database {
     private static $instance = null;
     private $conn;
-    
+
     private function __construct() {
-        $config = require_once __DIR__ . '/../../config/database.php';
-        
+        // Ambil konfigurasi DB (config/database.php harus mengandalkan getenv)
+        $config = require __DIR__ . '/../../config/database.php';
+
+        // Pastikan semua env ada (agar debug jelas)
+        $host = $config['host'] ?? null;
+        $port = $config['port'] ?? 3306;
+        $dbname = $config['dbname'] ?? null;
+        $username = $config['username'] ?? null;
+        $password = $config['password'] ?? null;
+        $charset = $config['charset'] ?? 'utf8mb4';
+
+        if (!$host || !$dbname || !$username) {
+            throw new Exception("Database environment variables missing (check Railway Variables).");
+        }
+
         try {
-            // Tambahkan port jika ada
-            $port = $config['port'] ?? 3306;
-            $dsn = "mysql:host={$config['host']};port={$port};dbname={$config['dbname']};charset={$config['charset']}";
-            $this->conn = new PDO($dsn, $config['username'], $config['password']);
-            $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-            $this->conn->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
-        } catch(PDOException $e) {
-            die("Connection failed: " . $e->getMessage());
+            $dsn = "mysql:host={$host};port={$port};dbname={$dbname};charset={$charset}";
+            $this->conn = new PDO($dsn, $username, $password, [
+                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+                PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+            ]);
+        } catch (PDOException $e) {
+            // lempar exception supaya index.php menangkap dan menampilkan pesan debug
+            throw new Exception("Connection failed: " . $e->getMessage());
         }
     }
-    
+
     public static function getInstance() {
-        if(self::$instance === null) {
+        if (self::$instance === null) {
             self::$instance = new self();
         }
         return self::$instance;
     }
-    
+
     public function getConnection() {
         return $this->conn;
     }
-    
+
     private function __clone() {}
     public function __wakeup() {}
 }

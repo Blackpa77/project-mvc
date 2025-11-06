@@ -9,7 +9,7 @@ RUN apt-get update && apt-get install -y \
 # Copy application
 COPY . /var/www/html/
 
-# Set document root
+# Set document root (gunakan folder 'public' jika ada)
 ENV APACHE_DOCUMENT_ROOT /var/www/html/public
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
 RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
@@ -18,11 +18,10 @@ RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf
 RUN chown -R www-data:www-data /var/www/html
 RUN chmod -R 755 /var/www/html
 
-# Expose port
-EXPOSE 10000
+# Gunakan port dinamis dari Railway
+EXPOSE 8080
+RUN sed -i "s/Listen 80/Listen \${PORT}/" /etc/apache2/ports.conf \
+    && echo "ServerName localhost" >> /etc/apache2/apache2.conf
 
-# Update Apache port
-RUN sed -i 's/Listen 80/Listen 10000/g' /etc/apache2/ports.conf
-RUN sed -i 's/:80/:10000/g' /etc/apache2/sites-available/000-default.conf
-
+# Jalankan Apache
 CMD ["apache2-foreground"]

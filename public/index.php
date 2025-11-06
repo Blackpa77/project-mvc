@@ -1,12 +1,10 @@
 <?php
 
-echo "<pre>";
-echo "MYSQLHOST=" . getenv('MYSQLHOST') . "\n";
-echo "MYSQLUSER=" . getenv('MYSQLUSER') . "\n";
-echo "MYSQLDATABASE=" . getenv('MYSQLDATABASE') . "\n";
-echo "MYSQLPORT=" . getenv('MYSQLPORT') . "\n";
-echo "</pre>";
-exit;
+try {
+    $db = Database::getInstance()->getConnection();
+} catch (Exception $e) {
+    echo "DB ERROR: " . $e->getMessage();
+}
 
 
 require_once __DIR__ . '/../vendor/autoload.php';

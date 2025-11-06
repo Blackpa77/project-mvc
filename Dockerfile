@@ -19,9 +19,11 @@ RUN chown -R www-data:www-data /var/www/html
 RUN chmod -R 755 /var/www/html
 
 # Gunakan port dinamis dari Railway
-EXPOSE 8080
-RUN sed -i "s/Listen 80/Listen \${PORT}/" /etc/apache2/ports.conf \
+ENV PORT=8080  # fallback jika Railway tidak memberikan PORT
+RUN sed -i "s/Listen 80/Listen ${PORT}/" /etc/apache2/ports.conf \
     && echo "ServerName localhost" >> /etc/apache2/apache2.conf
+
+EXPOSE ${PORT}
 
 # Jalankan Apache
 CMD ["apache2-foreground"]
